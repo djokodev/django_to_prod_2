@@ -1,0 +1,35 @@
+services:
+  web:
+    build: .
+    container_name: django_to_prod_2
+    image: "ghcr.io/djokodev/django_to_prod_2:latest"
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    command: > 
+      gunicorn --bind 0.0.0.0:8000 --workers 3 --timeout 90 --log-level debug django_to_prod_2.wsgi:application
+
+  db:
+    image: postgres:15-alpine
+    container_name: postgres_db
+    env_file: 
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    env_file:
+      - .env
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+
+volumes:
+  postgres_data:
