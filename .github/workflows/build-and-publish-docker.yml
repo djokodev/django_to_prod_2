@@ -61,3 +61,27 @@ jobs:
               port: 22
               source: "./.env, ./docker-compose.prod.yml"
               target: "/${{secrets.SERVER_USER}}/projects/djanog_to_deploy_2"
+
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs: befor-deploy
+    steps:
+        - uses: actions/checkout@v3
+        - name: Deploy using ssh
+          uses: appleboy/ssh-action@master
+          with:
+              host: ${{secrets.DEPLOY_PUBLIC_IP_ADDRESS}}
+              username: ${{secrets.SERVER_USER}}
+              key: ${{secrets.PRIVATE_KEY}}
+              port: 22
+              script: |
+                  echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+                  cd /${{secrets.SERVER_USER}}/projects/djanog_to_deploy_2
+                  export $(cat .env | xargs)
+                  # 1. Démarrer directement les nouveaux conteneurs
+                  docker compose -f docker-compose.prod.yml up -d --pull always
+
+                  # 2. Nettoyer ensuite
+                  docker image prune -f -a || true
+                  docker rm -vf $(docker ps --filter status=exited -aq) || true
