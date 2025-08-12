@@ -40,3 +40,24 @@ jobs:
 
       - name: Push Docker image
         run: docker compose push
+
+  befor-deploy:
+        name: Before deploy
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/main'
+        needs: build-and-push
+        steps:
+          - uses: actions/checkout@v3
+          - name: Set env file
+            run: |
+                chmod +x ./setup_env.sh
+                bash ./setup_env.sh
+          - name: copy file from ssh key
+            uses: appleboy/scp-action@v0.1.4
+            with:
+              host: ${{secrets.DEPLOY_PUBLIC_IP_ADDRESS}}
+              username: ${{secrets.SERVER_USER}}
+              key: ${{secrets.PRIVATE_KEY}}
+              port: 22
+              source: "./.env, ./docker-compose.prod.yml"
+              target: "/${{secrets.SERVER_USER}}/projects/djanog_to_deploy_2"
