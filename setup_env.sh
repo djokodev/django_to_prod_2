@@ -6,5 +6,5 @@ echo POSTGRES_DB=$POSTGRES_DB >> .env
 echo PGADMIN_DEFAULT_EMAIL=$PGADMIN_DEFAULT_EMAIL >> .env
 echo PGADMIN_DEFAULT_PASSWORD=$PGADMIN_DEFAULT_PASSWORD >> .env
 echo DEBUG=True >> .env
-echo SECRET_KEY=django-insecure-zknu8v5pg(*gqwwnl2#@hk)10d=52%j&8cdtr=d@r60ti^$i8h >> .env
+echo SECRET_KEY='django-insecure-zknu8v5pg(*gqwwnl2#@hk)10d=52%j&8cdtr=d@r60ti^$i8h' >> .env
 echo ALLOWED_HOSTS=localhost,127.0.0.1,django-2.djokodev.com >> .env
